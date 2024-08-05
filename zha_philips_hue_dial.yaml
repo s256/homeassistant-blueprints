@@ -1,0 +1,154 @@
+blueprint:
+  name: ZHA - Philips Hue Tap dial switch (8719514440937/8719514440999) actions
+  description: >
+    Define actions your Philips Hue Tap dial switch using ZHA.
+    For your button entity, choose the right sensor with your button name.
+  domain: automation
+  input:
+    button_sensor:
+      name: Philips Hue Tap dial switch sensor entity
+      description: Sensor for Philips Hue Tap dial switch to use (Use sensor with entity_id ends with _action)
+      selector:
+        device:
+          integration: zha
+          manufacturer: Signify Netherlands B.V.
+          model: RDM002
+    # Button 1
+    remote_button_1_single_press:
+      name: Button 1 Single Press
+      description: Action to run on button 1 single press
+      default: []
+      selector:
+        action:
+    # Button 2
+    remote_button_2_single_press:
+      name: Button 2 Single Press
+      description: Action to run on button 2 single press
+      default: []
+      selector:
+        action:
+    # Button 3
+    remote_button_3_single_press:
+      name: Button 3 Single Press
+      description: Action to run on button 3 single press
+      default: []
+      selector:
+        action:
+    # Button 4
+    remote_button_4_single_press:
+      name: Button 4 Single Press
+      description: Action to run on button 4 single press
+      default: []
+      selector:
+        action:
+    # Dial rotate left
+    remote_dial_rotate_left_step:
+      name: Dial rotate left step
+      description: Action to run on dial rotate left step
+      default: []
+      selector:
+        action:
+    # Dial rotate right
+    remote_dial_rotate_right_step:
+      name: Dial rotate right step
+      description: Action to run on dial rotate right step
+      default: []
+      selector:
+        action:
+    # Dial rotate left - multi steps
+    remote_dial_rotate_left_steps:
+      name: Dial rotate left - multi steps
+      description: Action to run on dial rotate left step
+      default: []
+      selector:
+        action:
+    # Dial rotate right - multi steps
+    remote_dial_rotate_right_steps:
+      name: Dial rotate right - multi steps
+      description: Action to run on dial rotate right step
+      default: []
+      selector:
+        action:
+    # Dial rotate left - multi steps - fast
+    remote_dial_rotate_left_steps_fast:
+      name: Dial rotate left - multi steps - fast
+      description: Action to run on dial rotate left step
+      default: []
+      selector:
+        action:
+    # Dial rotate right - multi steps - fast
+    remote_dial_rotate_right_steps_fast:
+      name: Dial rotate right - multi steps - fast
+      description: Action to run on dial rotate right step
+      default: []
+      selector:
+        action:
+mode: restart
+max_exceeded: silent
+
+# Each option is explicitly defined as a trigger because sensor reports empty values as well.
+# Not defining explicit triggers causes the automation to show up in the log multiple times per button press.
+trigger:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: !input "remote"
+
+action:
+  - variables:
+      command: "{{ trigger.event.data.command }}"
+      args: "{{ trigger.event.data.args }}"
+      params: "{{ trigger.event.data.params }}"
+      scene: "{{ trigger.event.data.params.scene_id }}"
+      step_mode: "{{ trigger.event.data.params.step_mode }}"
+      step_size: "{{ trigger.event.data.params.step_size }}"
+
+  - choose:
+      - conditions:
+          - "{{ command == 'recall' }}"
+          - "{{ scene == 1 }}"
+        sequence: !input remote_button_1_single_press
+      - conditions:
+          - "{{ command == 'recall' }}"
+          - "{{ scene == 0 }}"
+        sequence: !input remote_button_2_single_press
+
+      - conditions:
+          - "{{ command == 'recall' }}"
+          - "{{ scene == 5 }}"
+        sequence: !input remote_button_3_single_press
+
+      - conditions:
+          - "{{ command == 'recall' }}"
+          - "{{ scene == 4 }}"
+        sequence: !input remote_button_4_single_press
+      - conditions:
+          - "{{ command == 'step_with_on_off' }}"
+          - "{{ step_mode == 'StepMode.Down' }}"
+          - "{{ step_size < 10 }}"
+        sequence: !input remote_dial_rotate_left_step
+      - conditions:
+          - "{{ command == 'step_with_on_off' }}"
+          - "{{ step_mode == 'StepMode.Up' }}"
+          - "{{ step_size < 10 }}"
+        sequence: !input remote_dial_rotate_right_step
+      - conditions:
+          - "{{ command == 'step_with_on_off' }}"
+          - "{{ step_mode == 'StepMode.Down' }}"
+          - "{{ step_size <= 10 and step_size < 50 }}"
+        sequence: !input remote_dial_rotate_left_steps
+      - conditions:
+          - "{{ command == 'step_with_on_off' }}"
+          - "{{ step_mode == 'StepMode.Up' }}"
+          - "{{ step_size <= 10 and step_size < 50 }}"
+        sequence: !input remote_dial_rotate_right_steps
+      - conditions:
+          - "{{ command == 'step_with_on_off' }}"
+          - "{{ step_mode == 'StepMode.Down' }}"
+          - "{{ step_size <= 50 }}"
+        sequence: !input remote_dial_rotate_left_steps_fast
+      - conditions:
+          - "{{ command == 'step_with_on_off' }}"
+          - "{{ step_mode == 'StepMode.Up' }}"
+          - "{{ step_size <= 50 }}"
+        sequence: !input remote_dial_rotate_right_steps_fast
