@@ -5,7 +5,7 @@ blueprint:
     For your button entity, choose the right sensor with your button name.
   domain: automation
   input:
-    button_sensor:
+    remote:
       name: Philips Hue Tap dial switch sensor entity
       description: Sensor for Philips Hue Tap dial switch to use (Use sensor with entity_id ends with _action)
       selector:
