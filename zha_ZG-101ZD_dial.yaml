@@ -1,0 +1,84 @@
+blueprint:
+  name: ZHA - ZG-101Z/D Dial Switch
+  description: >
+    Define actions your ZG-101Z/D Dial Switch switch using ZHA.
+    For your button entity, choose the right sensor with your button name.
+  domain: automation
+  input:
+    remote:
+      name: ZG-101Z/D Dial Switch switch sensor entity
+      description: Sensor for ZG-101Z/D Dial Switch switch to use (Use sensor with entity_id ends with _action)
+      selector:
+        device:
+          integration: zha
+          manufacturer: _TZ3000_abrsvsou
+          model: TS004F
+    # Short Press
+    remote_button_short_press:
+      name: Button Short Press
+      description: Action to run on button short press
+      default: []
+      selector:
+        action:
+    # Long Press
+    remote_button_long_press:
+      name: Button Long Press
+      description: Action to run on button long press
+      default: []
+      selector:
+        action:
+    # Double Press
+    remote_button_double_press:
+      name: Button double Press
+      description: Action to run on button double press
+      default: []
+      selector:
+        action:
+
+    # Dial rotate left
+    remote_dial_rotate_left:
+      name: Dial rotate left step
+      description: Action to run on dial rotate left step
+      default: []
+      selector:
+        action:
+    # Dial rotate right
+    remote_dial_rotate_right:
+      name: Dial rotate right step
+      description: Action to run on dial rotate right step
+      default: []
+      selector:
+        action:
+
+mode: restart
+max_exceeded: silent
+
+# Each option is explicitly defined as a trigger because sensor reports empty values as well.
+# Not defining explicit triggers causes the automation to show up in the log multiple times per button press.
+trigger:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: !input "remote"
+
+action:
+  - variables:
+      command: "{{ trigger.event.data.command }}"
+
+  - choose:
+      - conditions:
+          - "{{ command == 'remote_button_short_press' }}"
+        sequence: !input remote_button_short_press
+      - conditions:
+          - "{{ command == 'remote_button_long_press' }}"
+        sequence: !input remote_button_long_press
+      - conditions:
+          - "{{ command == 'remote_button_double_press' }}"
+        sequence: !input remote_button_double_press
+      - conditions:
+          - "{{ command == 'left' }}"
+        sequence: !input remote_dial_rotate_left
+
+      - conditions:
+          - "{{ command == 'right' }}"
+        sequence: !input remote_dial_rotate_right
