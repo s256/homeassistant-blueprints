@@ -9,16 +9,12 @@ blueprint:
       name: ZG-101Z/D Dial Switch sensor Entity
       description: Sensor for ZG-101Z/D Dial Switch switch to use (Use sensor with entity_id ends with _action)
       selector:
-        device:
-          integration: mqtt
         entity:
           domain: sensor
     operating_mode:
       name: ZG-101Z/D Dial Switch Operating Mode Select Entity
       description: the selector of the current operator mode. It switches when you triple press, which we'll facilitate as pattern
       selector:
-        device:
-          integration: mqtt
         entity:
           domain: select
     # Short Press
