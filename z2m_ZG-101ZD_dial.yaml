@@ -70,6 +70,12 @@ triggers:
     entity_id: !input button_sensor
   - trigger: state
     entity_id: !input operating_mode
+    from: "command"
+    to: "event"
+  - trigger: state
+    entity_id: !input operating_mode
+    from: "event"
+    to: "command"
 actions:
   - variables:
       command: "{{ trigger.to_state.state }}"
