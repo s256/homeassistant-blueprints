@@ -85,8 +85,9 @@ actions:
           - "{{ command == 'double' }}"
         sequence: !input remote_button_double_press
       - conditions:
-          - "{{ command == 'command' }}"
-          - "{{ command == 'event' }}"
+          - or:
+              - "{{ command == 'command' }}"
+              - "{{ command == 'event' }}"
         sequence: !input remote_button_triple_press
       - conditions:
           - "{{ command == 'rotate_left' }}"
