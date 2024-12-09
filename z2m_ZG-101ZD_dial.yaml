@@ -23,42 +23,42 @@ blueprint:
       description: Action to run on button short press
       default: []
       selector:
-        command:
+        action:
     # Long Press
     remote_button_long_press:
       name: Button Long Press
       description: Action to run on button long press
       default: []
       selector:
-        command:
+        action:
     # Double Press
     remote_button_double_press:
       name: Button double Press
       description: Action to run on button double press
       default: []
       selector:
-        command:
+        action:
     # Triple Press
     remote_button_triple_press:
       name: Button Triple Press
       description: Action to run on button triple press
       default: []
       selector:
-        command:
+        action:
     # Dial rotate left
     remote_dial_rotate_left:
       name: Dial rotate left step
       description: Action to run on dial rotate left step
       default: []
       selector:
-        command:
+        action:
     # Dial rotate right
     remote_dial_rotate_right:
       name: Dial rotate right step
       description: Action to run on dial rotate right step
       default: []
       selector:
-        command:
+        action:
 
 mode: restart
 max_exceeded: silent
