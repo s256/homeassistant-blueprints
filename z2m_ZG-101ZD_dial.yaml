@@ -1,0 +1,101 @@
+blueprint:
+  name: Z2M - ZG-101Z/D Dial Switch
+  description: >
+    Define actions your ZG-101Z/D Dial Switch switch using zigbee2mqtt.
+    For your button entity, choose the right sensor with your button name.
+  domain: automation
+  input:
+    button_sensor:
+      name: ZG-101Z/D Dial Switch sensor Entity
+      description: Sensor for ZG-101Z/D Dial Switch switch to use (Use sensor with entity_id ends with _action)
+      selector:
+        device:
+          integration: mqtt
+        entity:
+          domain: sensor
+    operating_mode:
+      name: ZG-101Z/D Dial Switch Operating Mode Select Entity
+      description: the selector of the current operator mode. It switches when you triple press, which we'll facilitate as pattern
+      selector:
+        device:
+          integration: mqtt
+        entity:
+          domain: select
+    # Short Press
+    remote_button_short_press:
+      name: Button Short Press
+      description: Action to run on button short press
+      default: []
+      selector:
+        command:
+    # Long Press
+    remote_button_long_press:
+      name: Button Long Press
+      description: Action to run on button long press
+      default: []
+      selector:
+        command:
+    # Double Press
+    remote_button_double_press:
+      name: Button double Press
+      description: Action to run on button double press
+      default: []
+      selector:
+        command:
+    # Triple Press
+    remote_button_triple_press:
+      name: Button Triple Press
+      description: Action to run on button triple press
+      default: []
+      selector:
+        command:
+    # Dial rotate left
+    remote_dial_rotate_left:
+      name: Dial rotate left step
+      description: Action to run on dial rotate left step
+      default: []
+      selector:
+        command:
+    # Dial rotate right
+    remote_dial_rotate_right:
+      name: Dial rotate right step
+      description: Action to run on dial rotate right step
+      default: []
+      selector:
+        command:
+
+mode: restart
+max_exceeded: silent
+
+# Each option is explicitly defined as a trigger because sensor reports empty values as well.
+# Not defining explicit triggers causes the automation to show up in the log multiple times per button press.
+triggers:
+  - trigger: state
+    entity_id: !input button_sensor
+  - trigger: state
+    entity_id: !input operating_mode
+actions:
+  - variables:
+      command: "{{ trigger.to_state.state }}"
+
+  - choose:
+      - conditions:
+          - "{{ command == 'single' }}"
+        sequence: !input remote_button_short_press
+      - conditions:
+          - "{{ command == 'hold' }}"
+        sequence: !input remote_button_long_press
+      - conditions:
+          - "{{ command == 'double' }}"
+        sequence: !input remote_button_double_press
+      - conditions:
+          - "{{ command == 'command' }}"
+          - "{{ command == 'event' }}"
+        sequence: !input remote_button_triple_press
+      - conditions:
+          - "{{ command == 'rotate_left' }}"
+        sequence: !input remote_dial_rotate_left
+
+      - conditions:
+          - "{{ command == 'rotate_right' }}"
+        sequence: !input remote_dial_rotate_right
