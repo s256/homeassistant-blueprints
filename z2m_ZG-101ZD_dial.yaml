@@ -97,9 +97,6 @@ triggers:
     from: "event"
     to: "command"
 actions:
-  - variables:
-      command: "{{ trigger.to_state.state }}"
-
   - choose:
       - conditions:
           - condition: trigger
@@ -128,6 +125,6 @@ actions:
 
       - conditions:
           - or:
-              - "{{ command == 'command' }}"
-              - "{{ command == 'event' }}"
+              - "{{ trigger.to_state.state == 'command' }}"
+              - "{{ trigger.to_state.state == 'event' }}"
         sequence: !input remote_button_triple_press
