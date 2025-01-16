@@ -66,27 +66,27 @@ triggers:
   - trigger: mqtt
     topic: !input mqtt_topic
     payload: "single"
-    value_template: "{{ value_json.payload }}"
+    value_template: "{{ value_json.action }}"
     id: "single"
   - trigger: mqtt
     topic: !input mqtt_topic
     payload: "double"
-    value_template: "{{ value_json.payload }}"
+    value_template: "{{ value_json.action }}"
     id: "double"
   - trigger: mqtt
     topic: !input mqtt_topic
     payload: "hold"
-    value_template: "{{ value_json.payload }}"
+    value_template: "{{ value_json.action }}"
     id: "hold"
   - trigger: mqtt
     topic: !input mqtt_topic
     payload: "rotate_left"
-    value_template: "{{ value_json.payload }}"
+    value_template: "{{ value_json.action }}"
     id: "rotate_left"
   - trigger: mqtt
     topic: !input mqtt_topic
     payload: "rotate_right"
-    value_template: "{{ value_json.payload }}"
+    value_template: "{{ value_json.action }}"
     id: "rotate_right"
   - trigger: state
     entity_id: !input operating_mode
