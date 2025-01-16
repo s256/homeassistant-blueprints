@@ -5,12 +5,9 @@ blueprint:
     For your button entity, choose the right sensor with your button name.
   domain: automation
   input:
-    button_sensor:
-      name: ZG-101Z/D Dial Switch sensor Entity
-      description: Sensor for ZG-101Z/D Dial Switch switch to use (Use sensor with entity_id ends with _action)
-      selector:
-        entity:
-          domain: sensor
+    mqtt_topic:
+      name: MQTT Topic for device updates
+      description: MQTT topic for Philips Hue Tap dial switch. e.g. "zigbee2mqtt/Switch Music/action"
     operating_mode:
       name: ZG-101Z/D Dial Switch Operating Mode Select Entity
       description: the selector of the current operator mode. It switches when you triple press, which we'll facilitate as pattern
@@ -66,8 +63,31 @@ max_exceeded: silent
 # Each option is explicitly defined as a trigger because sensor reports empty values as well.
 # Not defining explicit triggers causes the automation to show up in the log multiple times per button press.
 triggers:
-  - trigger: state
-    entity_id: !input button_sensor
+  - trigger: mqtt
+    topic: !input mqtt_topic
+    payload: "single"
+    value_template: "{{ value_json.action }}"
+    id: "single"
+  - trigger: mqtt
+    topic: !input mqtt_topic
+    payload: "double"
+    value_template: "{{ value_json.action }}"
+    id: "double"
+  - trigger: mqtt
+    topic: !input mqtt_topic
+    payload: "hold"
+    value_template: "{{ value_json.action }}"
+    id: "hold"
+  - trigger: mqtt
+    topic: !input mqtt_topic
+    payload: "rotate_left"
+    value_template: "{{ value_json.action }}"
+    id: "rotate_left"
+  - trigger: mqtt
+    topic: !input mqtt_topic
+    payload: "rotate_right"
+    value_template: "{{ value_json.action }}"
+    id: "rotate_right"
   - trigger: state
     entity_id: !input operating_mode
     from: "command"
@@ -82,23 +102,32 @@ actions:
 
   - choose:
       - conditions:
-          - "{{ command == 'single' }}"
+          - condition: trigger
+            id: "single"
         sequence: !input remote_button_short_press
+
       - conditions:
-          - "{{ command == 'hold' }}"
-        sequence: !input remote_button_long_press
-      - conditions:
-          - "{{ command == 'double' }}"
+          - condition: trigger
+            id: "double"
         sequence: !input remote_button_double_press
+
+      - conditions:
+          - condition: trigger
+            id: "hold"
+        sequence: !input remote_button_long_press
+
+      - conditions:
+          - condition: trigger
+            id: "rotate_left"
+        sequence: !input remote_dial_rotate_left
+
+      - conditions:
+          - condition: trigger
+            id: "rotate_right"
+        sequence: !input remote_dial_rotate_right
+
       - conditions:
           - or:
               - "{{ command == 'command' }}"
               - "{{ command == 'event' }}"
         sequence: !input remote_button_triple_press
-      - conditions:
-          - "{{ command == 'rotate_left' }}"
-        sequence: !input remote_dial_rotate_left
-
-      - conditions:
-          - "{{ command == 'rotate_right' }}"
-        sequence: !input remote_dial_rotate_right
